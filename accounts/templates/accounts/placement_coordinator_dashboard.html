@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Coordinator Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .button-container {
+            margin-top: 50px;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #4CAF50; /* Green background */
+            color: white;
+            padding: 15px 30px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+        .logout-btn {
+            text-align: right;
+            padding: 10px;
+        }
+        .logout-btn a {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .logout-btn a:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="logout-btn">
+        <a href="{% url 'logout' %}" class="button">Logout</a>
+    </div>
+    <h1>Welcome to the Placement Coordinator Dashboard</h1>
+    
+    <div class="button-container">
+        <a class="button" href="{% url 'add_company' %}">Add Company</a>
+        <a class="button" href="{% url 'add_placement_details' %}">Add Placement Details</a>
+        <a class="button" href="{% url 'view_details' %}">View Details</a>
+        <a class="button" href="{% url 'add_students' %}">Add Students</a>
+    </div>
+</body>
+</html>

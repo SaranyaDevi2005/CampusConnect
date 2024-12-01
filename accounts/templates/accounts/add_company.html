@@ -1,0 +1,22 @@
+<!-- accounts/templates/accounts/add_company.html -->
+{% extends 'accounts/base.html' %}
+
+{% block title %}Add Company{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Add Company</h1>
+    <div class="messages">
+        {% if messages %}
+            {% for message in messages %}
+                <p class="{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+</div>
+{% endblock %}

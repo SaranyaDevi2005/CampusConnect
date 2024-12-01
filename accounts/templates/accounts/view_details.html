@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Report Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* CSS Variables for Theme Colors */
+        :root {
+            --primary-color: #3d85c6;
+            --secondary-color: #f1f1f1;
+            --accent-color: #4CAF50;
+            --text-color: #333;
+            --border-color: #ddd;
+            --card-bg: #fff;
+            /* Enhanced Color Palette */
+            --chart-colors: [
+                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+                '#E7E9ED', '#8A2BE2', '#00CED1', '#FF1493', '#7FFF00', '#DC143C'
+            ];
+        }
+
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 10px;
+            padding: 0;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .heading {
+            font-size: 50px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .total-number {
+            font-size: 100px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--text-color);
+        }
+
+        /* Grid Layout for Charts */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 800px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Filter Styles */
+        .filter-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .filter-label {
+            font-weight: bold;
+            margin-right: 10px;
+            color: var(--text-color);
+        }
+
+        select {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Tooltip Enhancements */
+        .chartjs-tooltip {
+            opacity: 1;
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 6px 8px;
+            border-radius: 4px;
+            pointer-events: none;
+            transition: all 0.1s ease;
+            transform: translate(-50%, 0);
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+        /* Canvas Styles */
+        canvas {
+            width: 100% !important;
+            height: 400px !important;
+        }
+
+        .total-companies-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px; /* More padding for better centering */
+    margin-bottom: 30px
+}
+
+/* Adjust the font size and alignment for the title */
+.total-companies-title {
+    font-size: 35px; /* Increased font size */
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    color: var(--text-colorr);
+}
+
+/* Adjust the font size and alignment for the number */
+.total-number {
+    font-size: 120px; /* Increased font size */
+    font-weight: bold;
+    color: var(--primary-color);
+    text-align: center;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="heading">Placement Report Dashboard</div>
+
+        <!-- Total Companies Card -->
+        <div class="card total-companies-card">
+            <div class="chart-title total-companies-title">Total Number of Companies</div>
+            <div id="totalCompaniesDisplay" class="total-number">0</div>
+        </div>
+        
+
+        <!-- Charts Grid -->
+        <div class="grid">
+            <!-- Dynamic Chart with Filter -->
+            <div class="card">
+                <div class="chart-title">Category Wise Analysis of Companies</div>
+                <div class="filter-container">
+                    <label class="filter-label" for="filterSelect">Filter by:</label>
+                    <select id="filterSelect">
+                        <option value="dreamNonDream">Dream/Non-Dream</option>
+                        <option value="offerType">Offer Type</option>
+                        <option value="roles">Roles</option>
+                    </select>
+                </div>
+                <canvas id="dynamicChart"></canvas>
+            </div>
+
+            <!-- Role Distribution Chart with Filter -->
+            <div class="card">
+                <div class="chart-title">Company Role Distribution</div>
+                <div class="filter-container">
+                    <label class="filter-label" for="roleCategorySelect">Select Role Category:</label>
+                    <select id="roleCategorySelect">
+                        <option value="Software Related">Software Related</option>
+                        <option value="AI Related">AI Related</option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <canvas id="roleDistributionChart"></canvas>
+            </div>
+
+            <!-- Student Selection Chart -->
+            <div class="card">
+                <div class="chart-title">Student Selection by Company</div>
+                <canvas id="studentSelectionChart"></canvas>
+            </div>
+
+            <!-- Selection Ratio Chart -->
+            <div class="card">
+                <div class="chart-title">Selections per Round</div>
+                <canvas id="selectionRatioChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Django template data passed here -->
+    {{ total_companies|json_script:"totalCompanies" }}
+    {{ dream_non_dream_count|json_script:"dreamNonDreamCount" }}
+    {{ offer_type_count|json_script:"offerTypeCount" }}
+    {{ role_data|json_script:"roleData" }}
+    {{ selected_data|json_script:"selectedData" }}
+    {{ rounds_data|json_script:"roundsData" }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Parsing JSON data from Django context
+            const totalCompanies = JSON.parse(document.getElementById('totalCompanies').textContent);
+            const dreamNonDreamCount = JSON.parse(document.getElementById('dreamNonDreamCount').textContent);
+            const offerTypeCount = JSON.parse(document.getElementById('offerTypeCount').textContent);
+            const roleData = JSON.parse(document.getElementById('roleData').textContent);
+            const selectedData = JSON.parse(document.getElementById('selectedData').textContent);
+            const roundsData = JSON.parse(document.getElementById('roundsData').textContent);
+
+            /**
+             * Animate a counter from start to end within the given duration.
+             * @param {string} id - The ID of the HTML element to update.
+             * @param {number} start - The starting number.
+             * @param {number} end - The ending number.
+             * @param {number} duration - Duration in milliseconds.
+             */
+            function animateCounter(id, start, end, duration) {
+                const element = document.getElementById(id);
+                let current = start;
+                const range = end - start;
+                if (range === 0) {
+                    element.textContent = end;
+                    return;
+                }
+                const stepTime = Math.abs(Math.floor(duration / range));
+                const increment = end > start ? 1 : -1;
+
+                const timer = setInterval(() => {
+                    current += increment;
+                    element.textContent = current;
+                    if (current === end) {
+                        clearInterval(timer);
+                    }
+                }, stepTime);
+            }
+
+            // Initialize Total Companies Counter
+            animateCounter('totalCompaniesDisplay', 0, totalCompanies, 2000);
+
+            // Dynamic Chart Handling
+            const dynamicChartCtx = document.getElementById('dynamicChart').getContext('2d');
+            let dynamicChart;
+
+            /**
+             * Generate an array of colors for the charts.
+             * @param {number} count - Number of colors needed.
+             * @returns {Array} - Array of color strings.
+             */
+            function generateColors(count) {
+                const colors = [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                    '#9966FF', '#FF9F40', '#E7E9ED', '#8A2BE2',
+                    '#00CED1', '#FF1493', '#7FFF00', '#DC143C'
+                ];
+                // Repeat the colors array if count exceeds available colors
+                while (colors.length < count) {
+                    colors.push(...colors);
+                }
+                return colors.slice(0, count);
+            }
+
+            /**
+             * Update the dynamic chart based on selected filter.
+             * @param {Array} labels - The labels for the chart.
+             * @param {Array} data - The data points for the chart.
+             * @param {string} label - The label for the dataset.
+             */
+            function updateDynamicChart(labels, data, label) {
+                if (dynamicChart) dynamicChart.destroy();
+
+                const backgroundColors = generateColors(labels.length);
+
+                dynamicChart = new Chart(dynamicChartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: label,
+                            data: data,
+                            backgroundColor: backgroundColors,
+                            borderColor: 'rgba(0,0,0,0.1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { mode: 'index', intersect: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { precision:0 } },
+                            x: { 
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initial Dynamic Chart Setup
+            updateDynamicChart(
+                Object.keys(dreamNonDreamCount),
+                Object.values(dreamNonDreamCount),
+                'Companies'
+            );
+
+            // Handle Filter Change for Dynamic Chart
+            document.getElementById('filterSelect').addEventListener('change', function() {
+                const selectedFilter = this.value;
+                if (selectedFilter === 'dreamNonDream') {
+                    updateDynamicChart(
+                        Object.keys(dreamNonDreamCount),
+                        Object.values(dreamNonDreamCount),
+                        'Companies'
+                    );
+                } else if (selectedFilter === 'offerType') {
+                    updateDynamicChart(
+                        Object.keys(offerTypeCount),
+                        Object.values(offerTypeCount),
+                        'Offer Type'
+                    );
+                } else if (selectedFilter === 'roles') {
+                    const labels = roleData.map(role => role.role_name);
+                    const data = roleData.map(role => role.company_count);
+                    updateDynamicChart(labels, data, 'Roles');
+                }
+            });
+
+            // Role Distribution Chart
+            let roleDistributionChart;
+            const roleDistributionCtx = document.getElementById('roleDistributionChart').getContext('2d');
+
+            function updateRoleDistributionChart(roleCategory) {
+                const selectedRole = roleData.find(role => role.role_name === roleCategory);
+                const roleNames = selectedRole.original_roles;
+                const roleCounts = roleNames.reduce((acc, role) => {
+                    acc[role] = (acc[role] || 0) + 1;
+                    return acc;
+                }, {});
+
+                if (roleDistributionChart) {
+                    roleDistributionChart.destroy();
+                }
+                roleDistributionChart = new Chart(roleDistributionCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(roleCounts),
+                        datasets: [{
+                            data: Object.values(roleCounts),
+                            backgroundColor: [ '#9966FF', '#FF9F40',
+                '#E7E9ED', '#8A2BE2', '#00CED1', '#FF1493', '#7FFF00', '#DC143C']
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+            }
+
+            // Handle role category select change
+            document.getElementById('roleCategorySelect').addEventListener('change', function() {
+                updateRoleDistributionChart(this.value);
+            });
+
+            // Initialize with Software Related role distribution
+            updateRoleDistributionChart('Software Related');
+
+
+            // Student Selection Chart
+            const studentSelectionCtx = document.getElementById('studentSelectionChart').getContext('2d');
+            const selectedCompanies = selectedData.map(data => data.company_name);
+            const selectedStudents = selectedData.map(data => data.students_selected);
+            const selectedStudentsNames = selectedData.map(data => data.selected_names); // Assuming it's an array
+
+            const studentSelectionChart = new Chart(studentSelectionCtx, {
+                type: 'bar',
+                data: {
+                    labels: selectedCompanies,
+                    datasets: [{
+                        label: 'Students Selected',
+                        data: selectedStudents,
+                        backgroundColor: '#e4ef3e' ,
+                        borderColor: '#2980b9',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const index = context.dataIndex;
+                                    const count = selectedStudents[index];
+                                    const names = selectedStudentsNames[index];
+                                    // Assuming names is an array; join them into a string
+                                    const namesStr = Array.isArray(names) ? names.join(', ') : names;
+                                    return [
+                                        `Students Selected: ${count}`,
+                                        `Names: ${namesStr || 'N/A'}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision:0 } },
+                        x: { 
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // Selection Ratio per Round Chart
+            const selectionRatioCtx = document.getElementById('selectionRatioChart').getContext('2d');
+            const roundCompanies = roundsData.map(data => data.company_name);
+            const firstRound = roundsData.map(data => data.first_round);
+            const secondRound = roundsData.map(data => data.second_round);
+            const finalRound = roundsData.map(data => data.final_round);
+
+            new Chart(selectionRatioCtx, {
+                type: 'bar',
+                data: {
+                    labels: roundCompanies,
+                    datasets: [
+                        {
+                            label: '1st Round',
+                            data: firstRound,
+                            backgroundColor: '#FF6384',
+                            stack: 'Stack 0'
+                        },
+                        {
+                            label: '2nd Round',
+                            data: secondRound,
+                            backgroundColor: '#36A2EB',
+                            stack: 'Stack 0'
+                        },
+                        {
+                            label: 'Final Round',
+                            data: finalRound,
+                            backgroundColor: '#FFCE56',
+                            stack: 'Stack 0'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            stacked: true,
+                            ticks: { precision:0 }
+                        },
+                        x: { 
+                            stacked: true,
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

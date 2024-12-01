@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #333;
+        }
+        section {
+            margin: 40px 0;
+            text-align: center;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 20px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .logout-btn {
+            text-align: right;
+            padding: 10px;
+        }
+        .logout-btn a {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .logout-btn a:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <!-- Logout Button -->
+    <div class="logout-btn">
+        <a href="{% url 'logout' %}" class="button">Logout</a>
+    </div>
+
+    <h1>Welcome to the Student Dashboard</h1>
+
+    <!-- Buttons for Feedback and Placement Details -->
+    <section>
+        <button class="btn" onclick="window.location.href='/submit-feedback/'">Submit Feedback</button>
+        <button class="btn" onclick="window.location.href='/view_details/'">View Details</a>
+    </section>
+
+    <script>
+        function viewPlacementDetails() {
+            // Redirect to the view_details.html page
+            window.location.href = 'view_details.html';
+        }
+    </script>
+</body>
+</html>
